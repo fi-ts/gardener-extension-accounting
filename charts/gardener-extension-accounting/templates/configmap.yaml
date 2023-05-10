@@ -24,10 +24,13 @@ data:
       metalAuthType: {{ .Values.config.accounting.metalAuthType }}
 
       hostname: {{ .Values.config.accounting.apiHost }}
-      port: {{ .Values.config.accounting.apiPort }}
-      ca: {{ .Values.config.accounting.apiCA }}
-      cert: {{ .Values.config.accounting.apiCert }}
-      key: {{ .Values.config.accounting.apiKey }}
+      port: {{ .Values.config.accounting.apiPort | quote }}
+      ca: |
+{{ .Values.config.accounting.apiCA | indent 10 }}
+      cert: |
+{{ .Values.config.accounting.apiCert | indent 10 }}
+      key: |
+{{ .Values.config.accounting.apiKey | indent 10 }}
 
 {{- if .Values.config.imagePullSecret.encodedDockerConfigJSON }}
     imagePullSecret:

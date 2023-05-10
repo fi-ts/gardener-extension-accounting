@@ -6,7 +6,6 @@ metadata:
   labels:
 {{ include "labels" . | indent 4 }}
 rules:
-rules:
 - apiGroups:
   - extensions.gardener.cloud
   resources:
