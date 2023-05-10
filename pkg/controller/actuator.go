@@ -269,6 +269,10 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 									Value: "0.0.0.0",
 								},
 								{
+									Name:  "KUBE_COUNTER_KUBECONFIG",
+									Value: gutil.PathGenericKubeconfig,
+								},
+								{
 									Name:  "KUBE_COUNTER_PARTITION",
 									Value: infrastructureConfig.PartitionID,
 								},
