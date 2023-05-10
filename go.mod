@@ -7,6 +7,7 @@ require (
 	github.com/gardener/gardener v1.59.0
 	github.com/go-logr/logr v1.2.4
 	github.com/golang/mock v1.6.0
+	github.com/metal-stack/firewall-controller v1.3.0
 	github.com/metal-stack/gardener-extension-provider-metal v0.20.4
 	github.com/metal-stack/metal-go v0.22.3
 	github.com/metal-stack/metal-lib v0.11.6
@@ -89,7 +90,6 @@ require (
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/metal-stack/duros-controller v0.6.1 // indirect
-	github.com/metal-stack/firewall-controller v1.3.0 // indirect
 	github.com/metal-stack/firewall-controller-manager v0.2.0 // indirect
 	github.com/metal-stack/security v0.6.6 // indirect
 	github.com/miekg/dns v1.1.50 // indirect

@@ -95,6 +95,12 @@ rules:
   verbs:
   - update
   - get
+- apiGroups:
+  - metal-stack.io
+  resources:
+  - clusterwidenetworkpolicies
+  verbs:
+  - "*"
 # dns records seem to be a regression?
 - apiGroups:
   - extensions.gardener.cloud

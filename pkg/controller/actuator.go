@@ -115,7 +115,7 @@ func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingCo
 		return err
 	}
 
-	var infrastructureConfig *metalv1alpha1.InfrastructureConfig
+	infrastructureConfig := &metalv1alpha1.InfrastructureConfig{}
 	err := metalhelper.DecodeRawExtension(cluster.Shoot.Spec.Provider.InfrastructureConfig, infrastructureConfig, a.decoder)
 	if err != nil {
 		return fmt.Errorf("unable decoding infrastructure config: %w", err)
