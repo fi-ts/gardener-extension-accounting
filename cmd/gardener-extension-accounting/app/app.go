@@ -92,7 +92,7 @@ func (o *Options) run(ctx context.Context) error {
 	// 	return fmt.Errorf("could not add the mutating webhook to manager: %w", err)
 	// }
 
-	if err := deployAccountingCWNP(mgr); err != nil {
+	if err := deployAccountingCWNP(ctx, mgr); err != nil {
 		return err
 	}
 
@@ -103,7 +103,7 @@ func (o *Options) run(ctx context.Context) error {
 	return nil
 }
 
-func deployAccountingCWNP(mgr manager.Manager) error {
+func deployAccountingCWNP(ctx context.Context, mgr manager.Manager) error {
 	scheme := runtime.NewScheme()
 	utilruntime.Must(firewallv1.AddToScheme(scheme))
 
@@ -121,7 +121,7 @@ func deployAccountingCWNP(mgr manager.Manager) error {
 		},
 	}
 
-	_, err = controllerutil.CreateOrUpdate(context.Background(), c, cp, func() error {
+	_, err = controllerutil.CreateOrUpdate(ctx, c, cp, func() error {
 		port9000 := intstr.FromInt(9000)
 		tcp := corev1.ProtocolTCP
 
