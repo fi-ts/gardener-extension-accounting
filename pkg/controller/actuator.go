@@ -233,7 +233,7 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:            "kubernetes-authn-webhook",
+							Name:            "accounting-exporter",
 							Image:           accountingExporterImage.String(),
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Ports: []corev1.ContainerPort{
