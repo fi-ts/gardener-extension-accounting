@@ -4,16 +4,28 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/spf13/cobra"
+
 	"github.com/fi-ts/gardener-extension-accounting/pkg/apis/accounting/install"
 	"github.com/fi-ts/gardener-extension-accounting/pkg/controller"
 
 	extensionscontroller "github.com/gardener/gardener/extensions/pkg/controller"
 	"github.com/gardener/gardener/extensions/pkg/util"
-	"github.com/spf13/cobra"
-	corev1 "k8s.io/api/core/v1"
+
 	componentbaseconfig "k8s.io/component-base/config"
+
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/intstr"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+
+	firewallv1 "github.com/metal-stack/firewall-controller/api/v1"
+	corev1 "k8s.io/api/core/v1"
+	networkingv1 "k8s.io/api/networking/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // NewControllerManagerCommand creates a new command that is used to start the controller.
@@ -80,8 +92,60 @@ func (o *Options) run(ctx context.Context) error {
 	// 	return fmt.Errorf("could not add the mutating webhook to manager: %w", err)
 	// }
 
+	if err := deployAccountingCWNP(mgr); err != nil {
+		return err
+	}
+
 	if err := mgr.Start(ctx); err != nil {
 		return fmt.Errorf("error running manager: %w", err)
+	}
+
+	return nil
+}
+
+func deployAccountingCWNP(mgr manager.Manager) error {
+	scheme := runtime.NewScheme()
+	utilruntime.Must(firewallv1.AddToScheme(scheme))
+
+	c, err := client.New(mgr.GetConfig(), client.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		return fmt.Errorf("unable to create client: %w", err)
+	}
+
+	cp := &firewallv1.ClusterwideNetworkPolicy{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "egress-allow-accounting-api",
+			Namespace: "firewall",
+		},
+	}
+
+	_, err = controllerutil.CreateOrUpdate(context.Background(), c, cp, func() error {
+		port9000 := intstr.FromInt(9000)
+		tcp := corev1.ProtocolTCP
+
+		cp.Spec.Egress = []firewallv1.EgressRule{
+			{
+				Ports: []networkingv1.NetworkPolicyPort{
+					{
+						Port:     &port9000,
+						Protocol: &tcp,
+					},
+				},
+				To: []networkingv1.IPBlock{
+					{
+						CIDR: "0.0.0.0/0",
+					},
+				},
+			},
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return fmt.Errorf("unable to deploy clusterwide network policy for accounting-api into seed firewall namespace %w", err)
 	}
 
 	return nil
