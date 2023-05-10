@@ -110,7 +110,7 @@ func (a *actuator) Migrate(ctx context.Context, ex *extensionsv1alpha1.Extension
 }
 
 func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingConfig, cluster *controller.Cluster, namespace string) error {
-	shootAccessSecret := gutil.NewShootAccessSecret(gutil.SecretNamePrefixShootAccess+"group-rolebinding-controller", namespace)
+	shootAccessSecret := gutil.NewShootAccessSecret(gutil.SecretNamePrefixShootAccess+"accounting-exporter", namespace)
 	if err := shootAccessSecret.Reconcile(ctx, a.client); err != nil {
 		return err
 	}
