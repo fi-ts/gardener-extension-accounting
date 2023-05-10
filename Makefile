@@ -52,7 +52,7 @@ build:
 .PHONY: install
 install: revendor $(HELM)
 	@LD_FLAGS="-w -X github.com/gardener/$(EXTENSION_PREFIX)-$(NAME)/pkg/version.Version=$(VERSION)" \
-	$(REPO_ROOT)/vendor/github.com/gardener/gardener/hack/install.sh ./...
+	$(REPO_ROOT)/vendor/github.com/gardener/gardener/hack/install.sh ./cmd/gardener-extension-accounting
 
 .PHONY: docker-image
 docker-image:
