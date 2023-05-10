@@ -63,6 +63,8 @@ func autoConvert_v1alpha1_Accounting_To_config_Accounting(in *Accounting, out *c
 	out.MetalURL = in.MetalURL
 	out.MetalHMAC = in.MetalHMAC
 	out.MetalAuthType = in.MetalAuthType
+	out.AccountingHost = in.AccountingHost
+	out.AccountingPort = in.AccountingPort
 	out.CA = in.CA
 	out.ClientCert = in.ClientCert
 	out.ClientKey = in.ClientKey
@@ -78,6 +80,8 @@ func autoConvert_config_Accounting_To_v1alpha1_Accounting(in *config.Accounting,
 	out.MetalURL = in.MetalURL
 	out.MetalHMAC = in.MetalHMAC
 	out.MetalAuthType = in.MetalAuthType
+	out.AccountingHost = in.AccountingHost
+	out.AccountingPort = in.AccountingPort
 	out.CA = in.CA
 	out.ClientCert = in.ClientCert
 	out.ClientKey = in.ClientKey

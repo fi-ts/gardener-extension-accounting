@@ -29,9 +29,16 @@ type Accounting struct {
 	MetalHMAC     string `json:"metalHMAC"`
 	MetalAuthType string `json:"metalAuthType"`
 
-	CA         string `json:"ca"`
+	// AccountingHost the host domain to reach the accounting-api
+	AccountingHost string `json:"hostname"`
+	// AccountingPort the port to reach the accounting-api
+	AccountingPort string `json:"port"`
+	// CA is the ca certificate of the accounting-api
+	CA string `json:"ca"`
+	// ClientCert is the client certificate to communicate with the accounting-api
 	ClientCert string `json:"cert"`
-	ClientKey  string `json:"key"`
+	// ClientKey is the client key certificate to communicate with the accounting-api
+	ClientKey string `json:"key"`
 }
 
 // ImagePullSecret provides an opportunity to inject an image pull secret into the resource deployments

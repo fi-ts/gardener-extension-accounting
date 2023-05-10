@@ -28,9 +28,16 @@ type Accounting struct {
 	MetalHMAC     string
 	MetalAuthType string
 
-	CA         string
+	// AccountingHost the host domain to reach the accounting-api
+	AccountingHost string
+	// AccountingPort the port to reach the accounting-api
+	AccountingPort string
+	// CA is the ca certificate of the accounting-api
+	CA string
+	// ClientCert is the client certificate to communicate with the accounting-api
 	ClientCert string
-	ClientKey  string
+	// ClientKey is the client key certificate to communicate with the accounting-api
+	ClientKey string
 }
 
 // ImagePullSecret provides an opportunity to inject an image pull secret into the resource deployments

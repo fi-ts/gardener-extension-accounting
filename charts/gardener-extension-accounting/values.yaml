@@ -42,6 +42,8 @@ config:
     metalURL: ""
     metalHMAC: ""
     metalAuthType: "Metal-View"
+    apiHost: ""
+    apiPort: ""
     apiCA: ""
     apiCert: ""
     apiKey: ""

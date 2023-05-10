@@ -23,6 +23,8 @@ data:
       metalHMAC: {{ .Values.config.accounting.metalHMAC }}
       metalAuthType: {{ .Values.config.accounting.metalAuthType }}
 
+      hostname: {{ .Values.config.accounting.apiHost }}
+      port: {{ .Values.config.accounting.apiPort }}
       ca: {{ .Values.config.accounting.apiCA }}
       cert: {{ .Values.config.accounting.apiCert }}
       key: {{ .Values.config.accounting.apiKey }}

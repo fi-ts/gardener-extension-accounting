@@ -294,11 +294,11 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 								},
 								{
 									Name:  "KUBE_COUNTER_ACCOUNTING_API_HOSTNAME",
-									Value: cluster.Shoot.Name,
+									Value: cc.Accounting.AccountingHost,
 								},
 								{
 									Name:  "KUBE_COUNTER_ACCOUNTING_API_PORT",
-									Value: cluster.Shoot.Name,
+									Value: cc.Accounting.AccountingPort,
 								},
 								{
 									Name:  "KUBE_COUNTER_NETWORK_TRAFFIC_ENABLED",
