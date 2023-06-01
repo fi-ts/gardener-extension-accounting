@@ -9,6 +9,7 @@ VERIFY                      := true
 LEADER_ELECTION             := false
 IGNORE_OPERATION_ANNOTATION := false
 WEBHOOK_CONFIG_URL          := localhost
+ACCOUNTING_NAMESPACE		:= $(shell kubectl get ns -o jsonpath='{range .items[*]}{@.metadata.name}{"\n"}{end}' | grep extension-fits-accounting-)
 
 GOLANGCI_LINT_VERSION := v1.48.0
 
@@ -113,3 +114,5 @@ push-to-gardener-local:
 		./cmd/gardener-extension-accounting
 	docker build -f Dockerfile.dev -t ghcr.io/fi-ts/gardener-extension-accounting:latest .
 	kind --name gardener-local load docker-image ghcr.io/fi-ts/gardener-extension-accounting:latest
+	kubectl --kubeconfig=$(KUBECONFIG) patch deployments.apps -n $(ACCOUNTING_NAMESPACE) gardener-extension-fits-accounting --patch='{"spec":{"template":{"spec":{"containers":[{"name": "gardener-extension-fits-accounting","imagePullPolicy":"IfNotPresent","image":"ghcr.io/fi-ts/gardener-extension-accounting:latest"}]}}}}'
+	kubectl --kubeconfig=$(KUBECONFIG) delete pod -n $(ACCOUNTING_NAMESPACE) -l app.kubernetes.io/name=gardener-extension-fits-accounting
