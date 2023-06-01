@@ -519,8 +519,8 @@ github.com/metal-stack/gardener-extension-provider-metal v0.20.4 h1:aS0H4DcZgfIw
 github.com/metal-stack/gardener-extension-provider-metal v0.20.4/go.mod h1:r0SgbEF3au3pJCMmriA3PNaawUd9h3v8msrMt43rGxI=
 github.com/metal-stack/metal-go v0.22.3 h1:bCkMG4EHvqBFr0u1CeZfMzzK4UnbT55B7DE1ICUHGNU=
 github.com/metal-stack/metal-go v0.22.3/go.mod h1:IZ7qY6dUAi72ZTz7Ni5cwWzzUXJj2Or1t04c3u4AUzU=
-github.com/metal-stack/metal-lib v0.11.8-0.20230531090437-e0f6c455f5d5 h1:p9pncqlHJCLLfeasfJd50yYpmElJlWDU5A7AJmjToSo=
-github.com/metal-stack/metal-lib v0.11.8-0.20230531090437-e0f6c455f5d5/go.mod h1:P5YbqdhQsNYMQmxthPljV+fZggUOayFs5YBO2ikpyUQ=
+github.com/metal-stack/metal-lib v0.11.8 h1:UZMd9PGPrqxR5l7sH6sIj6WcVEv/IFfOqbctjZijUFU=
+github.com/metal-stack/metal-lib v0.11.8/go.mod h1:bXhBTGmVQtUNGovCXZDAx0DGQ7eNEmN8kCQInq8EXcA=
 github.com/metal-stack/security v0.6.6 h1:KSPNN8YZd2EJEjsJ0xCBcd5o53uU0iFupahHA9Twuh0=
 github.com/metal-stack/security v0.6.6/go.mod h1:WchPm3+2Xjj1h7AxM+DsnR9EWgLw+ktoGCl/0gcmgSA=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=

@@ -10,7 +10,7 @@ require (
 	github.com/metal-stack/firewall-controller v1.3.0
 	github.com/metal-stack/gardener-extension-provider-metal v0.20.4
 	github.com/metal-stack/metal-go v0.22.3
-	github.com/metal-stack/metal-lib v0.11.8-0.20230531090437-e0f6c455f5d5
+	github.com/metal-stack/metal-lib v0.11.8
 	github.com/onsi/ginkgo v1.16.5
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
