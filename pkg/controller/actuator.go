@@ -22,6 +22,7 @@ import (
 	metalgo "github.com/metal-stack/metal-go"
 	"github.com/metal-stack/metal-go/api/client/project"
 	"github.com/metal-stack/metal-go/api/models"
+	"github.com/metal-stack/metal-lib/pkg/cache"
 	"github.com/metal-stack/metal-lib/pkg/pointer"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
@@ -41,10 +42,12 @@ import (
 
 // NewActuator returns an actuator responsible for Extension resources.
 func NewActuator(config config.ControllerConfiguration) extension.Actuator {
-	return &actuator{
+	a := &actuator{
 		log:    log.Log.WithName("fits-accounting"),
 		config: config,
 	}
+	a.projects = cache.NewFetchAll(30*time.Minute, a.fetchAllProjects)
+	return a
 }
 
 type actuator struct {
@@ -52,6 +55,8 @@ type actuator struct {
 	client  client.Client
 	decoder runtime.Decoder
 	config  config.ControllerConfiguration
+
+	projects *cache.FetchAllCache[string, *models.V1ProjectResponse]
 }
 
 // InjectClient injects the controller runtime client into the reconciler.
@@ -121,21 +126,14 @@ func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingCo
 		return fmt.Errorf("unable decoding infrastructure config: %w", err)
 	}
 
-	// we need to lookup the project name from the metal-api
-	// unfortunately we do not have it anywhere in the cluster spec
-	mclient, err := metalgo.NewDriver(a.config.Accounting.MetalURL, "", a.config.Accounting.MetalHMAC, metalgo.AuthType(a.config.Accounting.MetalAuthType))
-	if err != nil {
-		return fmt.Errorf("error creating metal client: %w", err)
-	}
-
-	resp, err := mclient.Project().FindProject(project.NewFindProjectParams().WithID(infrastructureConfig.ProjectID).WithContext(ctx), nil)
+	resp, err := a.projects.Get(ctx, infrastructureConfig.ProjectID)
 	if err != nil {
 		return fmt.Errorf("error fetching cluster project from metal-api: %w", err)
 	}
 
 	shootObjects := shootObjects()
 
-	seedObjects, err := seedObjects(&a.config, infrastructureConfig, resp.Payload, cluster, namespace, shootAccessSecret.Secret.Name)
+	seedObjects, err := seedObjects(&a.config, infrastructureConfig, resp, cluster, namespace, shootAccessSecret.Secret.Name)
 	if err != nil {
 		return err
 	}
@@ -163,6 +161,27 @@ func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingCo
 	a.log.Info("managed resource created successfully", "name", v1alpha1.SeedAccountingResourceName)
 
 	return nil
+}
+
+func (a *actuator) fetchAllProjects(ctx context.Context) (map[string]*models.V1ProjectResponse, error) {
+	// we need to lookup the project name from the metal-api
+	// unfortunately we do not have it anywhere in the cluster spec
+	mclient, err := metalgo.NewDriver(a.config.Accounting.MetalURL, "", a.config.Accounting.MetalHMAC, metalgo.AuthType(a.config.Accounting.MetalAuthType))
+	if err != nil {
+		return nil, fmt.Errorf("error creating metal client: %w", err)
+	}
+
+	projects, err := mclient.Project().ListProjects(project.NewListProjectsParams().WithContext(ctx), nil)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching projects from metal-api: %w", err)
+	}
+
+	result := make(map[string]*models.V1ProjectResponse)
+	for _, p := range projects.Payload {
+		result[p.Meta.ID] = p
+	}
+
+	return result, nil
 }
 
 func (a *actuator) deleteResources(ctx context.Context, namespace string) error {
