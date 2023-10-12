@@ -10,12 +10,15 @@ import (
 	"github.com/fi-ts/gardener-extension-accounting/pkg/controller"
 
 	extensionscontroller "github.com/gardener/gardener/extensions/pkg/controller"
+	heartbeatcontroller "github.com/gardener/gardener/extensions/pkg/controller/heartbeat"
 	"github.com/gardener/gardener/extensions/pkg/util"
+	gardenerhealthz "github.com/gardener/gardener/pkg/healthz"
 
 	componentbaseconfig "k8s.io/component-base/config"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 
 	"k8s.io/apimachinery/pkg/runtime"
@@ -40,6 +43,10 @@ func NewControllerManagerCommand() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := options.optionAggregator.Complete(); err != nil {
 				return fmt.Errorf("error completing options: %w", err)
+			}
+
+			if err := options.heartbeatOptions.Validate(); err != nil {
+				return err
 			}
 
 			cmd.SilenceUsage = true
@@ -83,14 +90,23 @@ func (o *Options) run(ctx context.Context) error {
 	ctrlConfig.Apply(&controller.DefaultAddOptions.Config)
 	o.controllerOptions.Completed().Apply(&controller.DefaultAddOptions.ControllerOptions)
 	o.reconcileOptions.Completed().Apply(&controller.DefaultAddOptions.IgnoreOperationAnnotation)
+	o.heartbeatOptions.Completed().Apply(&heartbeatcontroller.DefaultAddOptions)
 
 	if err := o.controllerSwitches.Completed().AddToManager(mgr); err != nil {
 		return fmt.Errorf("could not add controllers to manager: %w", err)
 	}
 
-	// if _, _, err := o.webhookOptions.Completed().AddToManager(ctx, mgr); err != nil {
-	// 	return fmt.Errorf("could not add the mutating webhook to manager: %w", err)
-	// }
+	if _, err := o.webhookOptions.Completed().AddToManager(ctx, mgr); err != nil {
+		return fmt.Errorf("could not add the mutating webhook to manager: %w", err)
+	}
+
+	if err := mgr.AddReadyzCheck("informer-sync", gardenerhealthz.NewCacheSyncHealthz(mgr.GetCache())); err != nil {
+		return fmt.Errorf("could not add ready check for informers: %w", err)
+	}
+
+	if err := mgr.AddHealthzCheck("ping", healthz.Ping); err != nil {
+		return fmt.Errorf("could not add health check to manager: %w", err)
+	}
 
 	if err := deployAccountingCWNP(ctx, mgr); err != nil {
 		return err

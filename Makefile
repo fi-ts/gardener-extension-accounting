@@ -9,9 +9,9 @@ VERIFY                      := true
 LEADER_ELECTION             := false
 IGNORE_OPERATION_ANNOTATION := false
 WEBHOOK_CONFIG_URL          := localhost
-ACCOUNTING_NAMESPACE		:= $(shell kubectl get ns -o jsonpath='{range .items[*]}{@.metadata.name}{"\n"}{end}' | grep extension-fits-accounting-)
 
-GOLANGCI_LINT_VERSION := v1.48.0
+GOLANGCI_LINT_VERSION := v1.54.2
+GO_VERSION := 1.21
 
 ifeq ($(CI),true)
   DOCKER_TTY_ARG=""
@@ -23,24 +23,6 @@ export GO111MODULE := on
 
 TOOLS_DIR := hack/tools
 -include vendor/github.com/gardener/gardener/hack/tools.mk
-
-#########################################
-# Rules for local development scenarios #
-#########################################
-
-.PHONY: start-accounting
-start-accounting:
-	@LEADER_ELECTION_NAMESPACE=garden go run \
-		-ldflags $(LD_FLAGS) \
-		-tags netgo \
-		./cmd/gardener-extension-accounting \
-		--config=./example/00-componentconfig.yaml \
-		--ignore-operation-annotation=$(IGNORE_OPERATION_ANNOTATION) \
-		--leader-election=$(LEADER_ELECTION) \
-		--webhook-config-server-host=$(HOSTNAME) \
-		--webhook-config-server-port=8443 \
-		--webhook-config-mode=url \
-		--webhook-config-url=$(WEBHOOK_CONFIG_URL)
 
 #################################################################
 # Rules related to binary build, Docker image build and release #
@@ -95,7 +77,7 @@ generate: $(HELM)
 generate-in-docker: revendor $(HELM)
 	# comment back in after first release:
 	# echo $(shell git describe --abbrev=0 --tags) > VERSION
-	docker run --rm -i$(DOCKER_TTY_ARG) -v $(PWD):/go/src/github.com/fi-ts/gardener-extension-accounting golang:1.19.4 \
+	docker run --rm -i$(DOCKER_TTY_ARG) -v $(PWD):/go/src/github.com/fi-ts/gardener-extension-accounting golang:$(GO_VERSION) \
 		sh -c "cd /go/src/github.com/fi-ts/gardener-extension-accounting \
 				&& make generate \
 				# && make install generate \
