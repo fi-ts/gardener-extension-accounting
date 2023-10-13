@@ -28,7 +28,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	metalhelper "github.com/metal-stack/gardener-extension-provider-metal/pkg/apis/metal/helper"
 	metalv1alpha1 "github.com/metal-stack/gardener-extension-provider-metal/pkg/apis/metal/v1alpha1"
@@ -43,7 +42,6 @@ import (
 // NewActuator returns an actuator responsible for Extension resources.
 func NewActuator(config config.ControllerConfiguration) extension.Actuator {
 	a := &actuator{
-		log:    log.Log.WithName("fits-accounting"),
 		config: config,
 	}
 	a.projects = cache.NewFetchAll(30*time.Minute, a.fetchAllProjects)
@@ -51,7 +49,6 @@ func NewActuator(config config.ControllerConfiguration) extension.Actuator {
 }
 
 type actuator struct {
-	log     logr.Logger
 	client  client.Client
 	decoder runtime.Decoder
 	config  config.ControllerConfiguration
@@ -77,7 +74,7 @@ func (a *actuator) InjectScheme(scheme *runtime.Scheme) error {
 }
 
 // Reconcile the Extension resource.
-func (a *actuator) Reconcile(ctx context.Context, ex *extensionsv1alpha1.Extension) error {
+func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
 	namespace := ex.GetNamespace()
 
 	cluster, err := controller.GetCluster(ctx, a.client, namespace)
@@ -92,7 +89,7 @@ func (a *actuator) Reconcile(ctx context.Context, ex *extensionsv1alpha1.Extensi
 		}
 	}
 
-	if err := a.createResources(ctx, accountingConfig, cluster, namespace); err != nil {
+	if err := a.createResources(ctx, log, accountingConfig, cluster, namespace); err != nil {
 		return err
 	}
 
@@ -100,21 +97,21 @@ func (a *actuator) Reconcile(ctx context.Context, ex *extensionsv1alpha1.Extensi
 }
 
 // Delete the Extension resource.
-func (a *actuator) Delete(ctx context.Context, ex *extensionsv1alpha1.Extension) error {
-	return a.deleteResources(ctx, ex.GetNamespace())
+func (a *actuator) Delete(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
+	return a.deleteResources(ctx, log, ex.GetNamespace())
 }
 
 // Restore the Extension resource.
-func (a *actuator) Restore(ctx context.Context, ex *extensionsv1alpha1.Extension) error {
-	return a.Reconcile(ctx, ex)
+func (a *actuator) Restore(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
+	return a.Reconcile(ctx, log, ex)
 }
 
 // Migrate the Extension resource.
-func (a *actuator) Migrate(ctx context.Context, ex *extensionsv1alpha1.Extension) error {
+func (a *actuator) Migrate(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
 	return nil
 }
 
-func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingConfig, cluster *controller.Cluster, namespace string) error {
+func (a *actuator) createResources(ctx context.Context, log logr.Logger, _ *v1alpha1.AccountingConfig, cluster *controller.Cluster, namespace string) error {
 	shootAccessSecret := gutil.NewShootAccessSecret(gutil.SecretNamePrefixShootAccess+"accounting-exporter", namespace)
 	if err := shootAccessSecret.Reconcile(ctx, a.client); err != nil {
 		return err
@@ -148,17 +145,17 @@ func (a *actuator) createResources(ctx context.Context, _ *v1alpha1.AccountingCo
 		return err
 	}
 
-	if err := managedresources.CreateForShoot(ctx, a.client, namespace, v1alpha1.ShootAccountingResourceName, false, shootResources); err != nil {
+	if err := managedresources.CreateForShoot(ctx, a.client, namespace, v1alpha1.ShootAccountingResourceName, "fits-accounting", false, shootResources); err != nil {
 		return err
 	}
 
-	a.log.Info("managed resource created successfully", "name", v1alpha1.ShootAccountingResourceName)
+	log.Info("managed resource created successfully", "name", v1alpha1.ShootAccountingResourceName)
 
 	if err := managedresources.CreateForSeed(ctx, a.client, namespace, v1alpha1.SeedAccountingResourceName, false, seedResources); err != nil {
 		return err
 	}
 
-	a.log.Info("managed resource created successfully", "name", v1alpha1.SeedAccountingResourceName)
+	log.Info("managed resource created successfully", "name", v1alpha1.SeedAccountingResourceName)
 
 	return nil
 }
@@ -184,8 +181,8 @@ func (a *actuator) fetchAllProjects(ctx context.Context) (map[string]*models.V1P
 	return result, nil
 }
 
-func (a *actuator) deleteResources(ctx context.Context, namespace string) error {
-	a.log.Info("deleting managed resource for registry cache")
+func (a *actuator) deleteResources(ctx context.Context, log logr.Logger, namespace string) error {
+	log.Info("deleting managed resource for registry cache")
 
 	if err := managedresources.Delete(ctx, a.client, namespace, v1alpha1.ShootAccountingResourceName, false); err != nil {
 		return err

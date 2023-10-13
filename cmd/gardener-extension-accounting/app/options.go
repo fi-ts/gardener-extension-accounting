@@ -5,6 +5,7 @@ import (
 
 	controllercmd "github.com/gardener/gardener/extensions/pkg/controller/cmd"
 	"github.com/gardener/gardener/extensions/pkg/controller/controlplane/genericactuator"
+	heartbeatcmd "github.com/gardener/gardener/extensions/pkg/controller/heartbeat/cmd"
 	webhookcmd "github.com/gardener/gardener/extensions/pkg/webhook/cmd"
 	"k8s.io/client-go/tools/leaderelection/resourcelock"
 
@@ -21,6 +22,7 @@ type Options struct {
 	restOptions        *controllercmd.RESTOptions
 	managerOptions     *controllercmd.ManagerOptions
 	controllerOptions  *controllercmd.ControllerOptions
+	heartbeatOptions   *heartbeatcmd.Options
 	healthOptions      *controllercmd.ControllerOptions
 	controllerSwitches *controllercmd.SwitchOptions
 	webhookOptions     *webhookcmd.AddToManagerOptions
@@ -63,6 +65,12 @@ func NewOptions() *Options {
 			// This is a default value.
 			MaxConcurrentReconciles: 5,
 		},
+		heartbeatOptions: &heartbeatcmd.Options{
+			// This is a default value.
+			ExtensionName:        ExtensionName,
+			RenewIntervalSeconds: 30,
+			Namespace:            os.Getenv("LEADER_ELECTION_NAMESPACE"),
+		},
 		controllerSwitches: accountingcmd.ControllerSwitchOptions(),
 		reconcileOptions:   &controllercmd.ReconcilerOptions{},
 		webhookOptions:     webhookOptions,
@@ -74,6 +82,7 @@ func NewOptions() *Options {
 		options.managerOptions,
 		options.controllerOptions,
 		options.accountingOptions,
+		controllercmd.PrefixOption("heartbeat-", options.heartbeatOptions),
 		controllercmd.PrefixOption("healthcheck-", options.healthOptions),
 		options.controllerSwitches,
 		options.reconcileOptions,
