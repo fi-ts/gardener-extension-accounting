@@ -236,10 +236,11 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 					Labels: map[string]string{
 						"k8s-app": "accounting-exporter",
 						"app":     "accounting-exporter",
-						"networking.gardener.cloud/from-prometheus":    "allowed",
-						"networking.gardener.cloud/to-dns":             "allowed",
-						"networking.gardener.cloud/to-shoot-apiserver": "allowed",
-						"networking.gardener.cloud/to-public-networks": "allowed",
+						"networking.gardener.cloud/from-prometheus":                     "allowed",
+						"networking.gardener.cloud/to-dns":                              "allowed",
+						"networking.gardener.cloud/to-shoot-apiserver":                  "allowed",
+						"networking.gardener.cloud/to-public-networks":                  "allowed",
+						"networking.resources.gardener.cloud/to-kube-apiserver-tcp-443": "allowed",
 					},
 					Annotations: map[string]string{
 						"scheduler.alpha.kubernetes.io/critical-pod": "",
