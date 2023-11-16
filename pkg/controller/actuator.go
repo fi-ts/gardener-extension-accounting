@@ -34,7 +34,6 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	networkingv1 "k8s.io/api/networking/v1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -365,31 +364,6 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 			},
 		},
 		accountingExporterDeployment,
-		&networkingv1.NetworkPolicy{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "egress-allow-accounting-api",
-				Namespace: namespace,
-			},
-			Spec: networkingv1.NetworkPolicySpec{
-				PodSelector: metav1.LabelSelector{
-					MatchLabels: map[string]string{
-						"app": "accounting-exporter",
-					},
-				},
-				Egress: []networkingv1.NetworkPolicyEgressRule{
-					{
-						To: []networkingv1.NetworkPolicyPeer{
-							{
-								IPBlock: &networkingv1.IPBlock{
-									CIDR: "0.0.0.0/0",
-								},
-							},
-						},
-					},
-				},
-				PolicyTypes: []networkingv1.PolicyType{networkingv1.PolicyTypeEgress},
-			},
-		},
 	}
 
 	if cc.ImagePullSecret != nil && cc.ImagePullSecret.DockerConfigJSON != "" {
