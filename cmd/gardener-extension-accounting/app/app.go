@@ -68,7 +68,7 @@ func (o *Options) run(ctx context.Context) error {
 
 	mgrOpts := o.managerOptions.Completed().Options()
 
-	mgrOpts.ClientDisableCacheFor = []client.Object{
+	mgrOpts.Client.Cache.DisableFor = []client.Object{
 		&corev1.Secret{},    // applied for ManagedResources
 		&corev1.ConfigMap{}, // applied for monitoring config
 	}
@@ -92,7 +92,7 @@ func (o *Options) run(ctx context.Context) error {
 	o.reconcileOptions.Completed().Apply(&controller.DefaultAddOptions.IgnoreOperationAnnotation)
 	o.heartbeatOptions.Completed().Apply(&heartbeatcontroller.DefaultAddOptions)
 
-	if err := o.controllerSwitches.Completed().AddToManager(mgr); err != nil {
+	if err := o.controllerSwitches.Completed().AddToManager(ctx, mgr); err != nil {
 		return fmt.Errorf("could not add controllers to manager: %w", err)
 	}
 

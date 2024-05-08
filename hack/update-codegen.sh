@@ -8,6 +8,8 @@ rm -f $GOPATH/bin/*-gen
 
 PROJECT_ROOT=$(dirname $0)/..
 
+git config --global --add safe.directory /go/src/github.com/fi-ts/gardener-extension-accounting
+
 bash "${PROJECT_ROOT}"/vendor/k8s.io/code-generator/generate-internal-groups.sh \
   deepcopy,defaulter \
   github.com/fi-ts/gardener-extension-accounting/pkg/client \
