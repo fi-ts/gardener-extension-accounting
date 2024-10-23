@@ -58,6 +58,11 @@ type actuator struct {
 	projects *cache.FetchAllCache[string, *models.V1ProjectResponse]
 }
 
+// ForceDelete implements extension.Actuator.
+func (a *actuator) ForceDelete(context.Context, logr.Logger, *extensionsv1alpha1.Extension) error {
+	return nil
+}
+
 // Reconcile the Extension resource.
 func (a *actuator) Reconcile(ctx context.Context, log logr.Logger, ex *extensionsv1alpha1.Extension) error {
 	namespace := ex.GetNamespace()
