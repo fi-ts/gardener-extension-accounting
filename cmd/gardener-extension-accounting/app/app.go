@@ -25,7 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
-	firewallv1 "github.com/metal-stack/firewall-controller/api/v1"
+	firewallv2 "github.com/metal-stack/firewall-controller/v2/api/v1"
 	corev1 "k8s.io/api/core/v1"
 	networkingv1 "k8s.io/api/networking/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -125,7 +125,7 @@ func (o *Options) run(ctx context.Context) error {
 
 func deployAccountingCWNP(ctx context.Context, mgr manager.Manager) error {
 	scheme := runtime.NewScheme()
-	utilruntime.Must(firewallv1.AddToScheme(scheme))
+	utilruntime.Must(firewallv2.AddToScheme(scheme))
 
 	c, err := client.New(mgr.GetConfig(), client.Options{
 		Scheme: scheme,
@@ -134,7 +134,7 @@ func deployAccountingCWNP(ctx context.Context, mgr manager.Manager) error {
 		return fmt.Errorf("unable to create client: %w", err)
 	}
 
-	cp := &firewallv1.ClusterwideNetworkPolicy{
+	cp := &firewallv2.ClusterwideNetworkPolicy{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "egress-allow-accounting-api",
 			Namespace: "firewall",
@@ -145,7 +145,7 @@ func deployAccountingCWNP(ctx context.Context, mgr manager.Manager) error {
 		port9000 := intstr.FromInt(9000)
 		tcp := corev1.ProtocolTCP
 
-		cp.Spec.Egress = []firewallv1.EgressRule{
+		cp.Spec.Egress = []firewallv2.EgressRule{
 			{
 				Ports: []networkingv1.NetworkPolicyPort{
 					{
