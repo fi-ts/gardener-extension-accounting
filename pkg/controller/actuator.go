@@ -11,7 +11,6 @@ import (
 	"github.com/fi-ts/gardener-extension-accounting/pkg/apis/config"
 	"github.com/fi-ts/gardener-extension-accounting/pkg/imagevector"
 	"github.com/gardener/gardener/extensions/pkg/controller"
-	gardenercontroller "github.com/gardener/gardener/extensions/pkg/controller"
 	"github.com/gardener/gardener/extensions/pkg/controller/extension"
 	extensionsv1alpha1 "github.com/gardener/gardener/pkg/apis/extensions/v1alpha1"
 	"github.com/gardener/gardener/pkg/client/kubernetes"
@@ -203,7 +202,7 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 	}
 
 	replicas := int32(1)
-	if gardenercontroller.IsHibernated(cluster) {
+	if controller.IsHibernated(cluster) {
 		replicas = 0
 	}
 
