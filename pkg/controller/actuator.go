@@ -343,6 +343,7 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 	}
 
 	objects := []client.Object{
+		accountingExporterDeployment,
 		&corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "accounting-exporter-tls",
@@ -354,7 +355,6 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 				"client-key.pem": cc.Accounting.ClientKey,
 			},
 		},
-		accountingExporterDeployment,
 	}
 
 	if cc.ImagePullSecret != nil && cc.ImagePullSecret.DockerConfigJSON != "" {
