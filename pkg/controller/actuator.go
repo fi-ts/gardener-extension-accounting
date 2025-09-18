@@ -353,6 +353,7 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 				"ca.pem":         cc.Accounting.CA,
 				"client.pem":     cc.Accounting.ClientCert,
 				"client-key.pem": cc.Accounting.ClientKey,
+				"d":              "a bug with trailing dashes",
 			},
 		},
 	}
