@@ -8,3 +8,4 @@ hack/tools/bin/*
 bin
 gardener-extension-accounting
 !gardener-extension-accounting/
+.ci
