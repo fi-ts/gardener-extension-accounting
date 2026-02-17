@@ -7,19 +7,20 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"sigs.k8s.io/controller-runtime/pkg/cluster"
+
 	"github.com/fi-ts/gardener-extension-accounting/pkg/apis/accounting/install"
 	"github.com/fi-ts/gardener-extension-accounting/pkg/controller"
 
 	extensionscontroller "github.com/gardener/gardener/extensions/pkg/controller"
 	heartbeatcontroller "github.com/gardener/gardener/extensions/pkg/controller/heartbeat"
 	"github.com/gardener/gardener/extensions/pkg/util"
-	"github.com/gardener/gardener/pkg/client/kubernetes"
 	gardenerhealthz "github.com/gardener/gardener/pkg/healthz"
 
+	"github.com/gardener/gardener/pkg/client/kubernetes"
 	componentbaseconfigv1alpha1 "k8s.io/component-base/config/v1alpha1"
 
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/cluster"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -97,7 +98,7 @@ func (o *Options) run(ctx context.Context) error {
 
 	log := mgr.GetLogger()
 	log.Info("Getting rest config for garden")
-	gardenRESTConfig, err := kubernetes.RESTConfigFromKubeconfigFile(os.Getenv(GardenKubeconfigEnvName), kubernetes.AuthTokenFile)
+	gardenRESTConfig, err := kubernetes.RESTConfigFromKubeconfigFile(os.Getenv("GARDEN_KUBECONFIG"), kubernetes.AuthTokenFile)
 	if err != nil {
 		return err
 	}
