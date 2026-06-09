@@ -22,7 +22,6 @@ import (
 	"github.com/metal-stack/metal-go/api/client/project"
 	"github.com/metal-stack/metal-go/api/models"
 	"github.com/metal-stack/metal-lib/pkg/cache"
-	"github.com/metal-stack/metal-lib/pkg/pointer"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/serializer"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -215,7 +214,7 @@ func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metal
 			},
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: pointer.Pointer(replicas),
+			Replicas: new(replicas),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{
 					"k8s-app": "accounting-exporter",
