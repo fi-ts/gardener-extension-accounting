@@ -943,14 +943,8 @@ github.com/mattn/go-runewidth v0.0.3/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzp
 github.com/mattn/go-sqlite3 v1.11.0/go.mod h1:FPy6KqzDD04eiIsT53CuJW3U88zkxoIYsOqkbpncsNc=
 github.com/mattn/go-tty v0.0.0-20180907095812-13ff1204f104/go.mod h1:XPvLUNfbS4fJH25nqRHfWLMa1ONC8Amw+mIA639KxkE=
 github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5Ld7szi9bcBfOoFv/3dc6xSMkL2PC0=
-github.com/metal-stack/duros-controller v0.12.1 h1:cHpNVuC+Sli2JJb+nydQwv9Vea2gbUo5Z+RC4EeXcq8=
-github.com/metal-stack/duros-controller v0.12.1/go.mod h1:O5JpRY6q9BKbVAXiglOFHtdhW9XO/stc3/gDW/2mPOA=
-github.com/metal-stack/firewall-controller-manager v0.5.2-0.20260204095628-8cf61d4506de h1:HYVLpdBIdq5nI/0dknUWIR+Y2qfj6GoMOiZ6mdyk3AI=
-github.com/metal-stack/firewall-controller-manager v0.5.2-0.20260204095628-8cf61d4506de/go.mod h1:gXD4ExLo4IdcuiwojauT1NgMGwAGSV6YoS4Fu1ZM9k0=
 github.com/metal-stack/firewall-controller/v2 v2.4.2 h1:p9OJyuNwQGDX1ax+TDQcsqPY7vXwijCP82i4yx8O4P8=
 github.com/metal-stack/firewall-controller/v2 v2.4.2/go.mod h1:XcRRy9GmiLCSPcQIjw/sq2lwFJwzf3aQyVDDHuMZjyo=
-github.com/metal-stack/gardener-extension-provider-metal v0.27.9 h1:Xy+OXk4IrJpXPBFvysfcI5/eMWCkIs5EyfH+rieP/Wo=
-github.com/metal-stack/gardener-extension-provider-metal v0.27.9/go.mod h1:o6R9ID07/8VDG/oFgBiyAd/ve7JU3rOgGybVYIignLE=
 github.com/metal-stack/metal-go v0.43.3 h1:I6N+sea97ICBy/p4ZVGmca3MWV7bvGT5rY3JPnEuW0M=
 github.com/metal-stack/metal-go v0.43.3/go.mod h1:GSfXrAj55LGsUSMHWGDsmq5n056NG0yb1JM8bgfvKOw=
 github.com/metal-stack/metal-lib v0.25.1 h1:z14xNl59ueQavNvMG4wcIZGqVyosNlaNFcy8hUu3SCU=
