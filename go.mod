@@ -8,7 +8,6 @@ require (
 	github.com/go-logr/logr v1.4.3
 	github.com/golang/mock v1.6.0
 	github.com/metal-stack/firewall-controller/v2 v2.4.2
-	github.com/metal-stack/gardener-extension-provider-metal v0.27.9
 	github.com/metal-stack/metal-go v0.43.3
 	github.com/metal-stack/metal-lib v0.25.1
 	github.com/onsi/ginkgo v1.16.5
@@ -134,8 +133,6 @@ require (
 	github.com/linode/linodego v1.69.1 // indirect
 	github.com/mattn/go-colorable v0.1.15 // indirect
 	github.com/mattn/go-isatty v0.0.22 // indirect
-	github.com/metal-stack/duros-controller v0.12.1 // indirect
-	github.com/metal-stack/firewall-controller-manager v0.5.2-0.20260204095628-8cf61d4506de // indirect
 	github.com/metal-stack/security v0.9.6 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect

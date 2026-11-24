@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"time"
@@ -27,9 +28,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	metalhelper "github.com/metal-stack/gardener-extension-provider-metal/pkg/apis/metal/helper"
-	metalv1alpha1 "github.com/metal-stack/gardener-extension-provider-metal/pkg/apis/metal/v1alpha1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -99,14 +97,38 @@ func (a *actuator) Migrate(ctx context.Context, log logr.Logger, ex *extensionsv
 	return nil
 }
 
+type infrastructureConfig struct {
+	ProjectID   string `json:"projectID"`
+	PartitionID string `json:"partitionID"`
+}
+
+func decodeInfrastructureConfig(config *runtime.RawExtension) (*infrastructureConfig, error) {
+	infrastructureConfig := &infrastructureConfig{}
+
+	if config != nil && len(config.Raw) > 0 {
+		if err := json.Unmarshal(config.Raw, infrastructureConfig); err != nil {
+			return nil, err
+		}
+	}
+
+	if infrastructureConfig.ProjectID == "" {
+		return nil, fmt.Errorf("projectID is not set")
+	}
+
+	if infrastructureConfig.PartitionID == "" {
+		return nil, fmt.Errorf("partitionID is not set")
+	}
+
+	return infrastructureConfig, nil
+}
+
 func (a *actuator) createResources(ctx context.Context, log logr.Logger, _ *v1alpha1.AccountingConfig, cluster *controller.Cluster, namespace string) error {
 	shootAccessSecret := gutil.NewShootAccessSecret(gutil.SecretNamePrefixShootAccess+"accounting-exporter", namespace)
 	if err := shootAccessSecret.Reconcile(ctx, a.client); err != nil {
 		return err
 	}
 
-	infrastructureConfig := &metalv1alpha1.InfrastructureConfig{}
-	err := metalhelper.DecodeRawExtension(cluster.Shoot.Spec.Provider.InfrastructureConfig, infrastructureConfig, a.decoder)
+	infrastructureConfig, err := decodeInfrastructureConfig(cluster.Shoot.Spec.Provider.InfrastructureConfig)
 	if err != nil {
 		return fmt.Errorf("unable decoding infrastructure config: %w", err)
 	}
@@ -194,7 +216,7 @@ func (a *actuator) deleteResources(ctx context.Context, log logr.Logger, namespa
 	return nil
 }
 
-func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *metalv1alpha1.InfrastructureConfig, project *models.V1ProjectResponse, cluster *controller.Cluster, namespace, shootAccessSecretName string) ([]client.Object, error) {
+func seedObjects(cc *config.ControllerConfiguration, infrastructureConfig *infrastructureConfig, project *models.V1ProjectResponse, cluster *controller.Cluster, namespace, shootAccessSecretName string) ([]client.Object, error) {
 	accountingExporterImage, err := imagevector.ImageVector().FindImage("accounting-exporter")
 	if err != nil {
 		return nil, fmt.Errorf("failed to find accounting-exporter image: %w", err)
